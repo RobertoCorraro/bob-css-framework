@@ -1,26 +1,58 @@
 /* ============================================================
    BOB CSS FRAMEWORK — Navigation Component
 
-   Sticky on both desktop and mobile.
-   Uses backdrop-filter blur for a frosted glass effect
-   so underlying content is still readable when scrolling.
+   MOBILE BEHAVIOR:
+   On mobile (below 48rem), nav links are hidden.
+   A hamburger button reveals a side drawer from the left.
+   An overlay darkens the rest of the page.
+   The drawer closes when clicking the overlay or the close button.
 
-   Base: bob_nav
-   Elements:
-     bob_nav__inner   — inner flex row (logo + links)
-     bob_nav__links   — horizontal list of nav links
+   The drawer uses CSS transitions for the slide-in animation.
+   The open state is toggled by adding the class `is_open`
+   to the <nav> element via a minimal JS snippet (see below).
+
+   NO JS FRAMEWORK NEEDED — works with 3 lines of vanilla JS.
+
+   HTML structure:
+   <nav class="bob_nav">
+     <div class="bob_nav__inner">
+       <a href="/">Logo</a>
+       <button class="bob_nav__hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="bob-nav-drawer">
+         <span></span><span></span><span></span>
+       </button>
+       <ul class="bob_nav__links" id="bob-nav-drawer" role="dialog" aria-label="Navigation menu">
+         <li><a href="/">Home</a></li>
+         <li><a href="/about">About</a></li>
+       </ul>
+     </div>
+     <div class="bob_nav__overlay" aria-hidden="true"></div>
+   </nav>
+
+   JS (add before </body>):
+   <script>
+     const nav = document.querySelector('.bob_nav');
+     const btn = nav.querySelector('.bob_nav__hamburger');
+     const overlay = nav.querySelector('.bob_nav__overlay');
+     function toggleNav(open) {
+       nav.classList.toggle('is_open', open);
+       btn.setAttribute('aria-expanded', open);
+       document.body.style.overflow = open ? 'hidden' : '';
+     }
+     btn.addEventListener('click', () => toggleNav(!nav.classList.contains('is_open')));
+     overlay.addEventListener('click', () => toggleNav(false));
+   </script>
    ============================================================ */
+
+
+/* ─── NAV BASE ─── */
 
 .bob_nav {
   position: sticky;
   top: 0;
   z-index: var(--bob_z_nav);
-
-  /* Frosted glass: semi-transparent bg + blur */
   background: color-mix(in oklab, var(--bob_color_bg) 85%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-
   border-bottom: 1px solid var(--bob_color_border);
 }
 
@@ -29,16 +61,165 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--bob_space_4);
-  min-height: 3.5rem;           /* 56px — comfortable nav height */
+  min-height: 3.5rem;
   padding-inline: var(--bob_bleed);
 }
 
+
+/* ─── DESKTOP LINKS ─── */
+
 .bob_nav__links {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--bob_space_4);
+  flex-wrap: nowrap; /* no wrapping on desktop — links stay on one line */
+  gap: var(--bob_space_5);
   align-items: center;
   list-style: none;
   padding: 0;
   margin: 0;
+}
+
+
+/* ─── HAMBURGER BUTTON ───
+   Hidden on desktop. Visible only on mobile.
+   Three lines made with <span> elements.
+   Transforms into X when nav is open. */
+
+.bob_nav__hamburger {
+  display: none;                 /* hidden on desktop */
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: var(--bob_touch_min);   /* 44px touch target */
+  height: var(--bob_touch_min);
+  padding: 0.6em;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: calc(var(--bob_z_nav) + 2); /* above overlay and drawer */
+}
+
+.bob_nav__hamburger span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--bob_color_text);
+  border-radius: 2px;
+  transform-origin: center;
+  transition:
+    transform var(--bob_duration_base) var(--bob_easing),
+    opacity var(--bob_duration_base) var(--bob_easing);
+}
+
+/* Animate to X when open */
+.bob_nav.is_open .bob_nav__hamburger span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.bob_nav.is_open .bob_nav__hamburger span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.bob_nav.is_open .bob_nav__hamburger span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+
+/* ─── OVERLAY ───
+   Semi-transparent dark layer behind the drawer.
+   Covers the entire viewport when the nav is open.
+   Clicking it closes the drawer. */
+
+.bob_nav__overlay {
+  position: fixed;
+  inset: 0;                        /* covers full screen */
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: calc(var(--bob_z_nav) + 1);
+  opacity: 0;
+  pointer-events: none;            /* invisible and non-interactive when closed */
+  transition: opacity var(--bob_duration_base) var(--bob_easing);
+}
+
+.bob_nav.is_open .bob_nav__overlay {
+  opacity: 1;
+  pointer-events: all;             /* clickable when open */
+}
+
+
+/* ─── MOBILE BREAKPOINT ───
+   Breakpoint in rem (48rem = ~768px) so it respects
+   the user's browser font-size preference.
+   This is more accessible than px breakpoints. */
+
+@media (max-width: 48rem) {
+
+  /* Show hamburger on mobile */
+  .bob_nav__hamburger {
+    display: flex;
+  }
+
+  /* ─── SIDE DRAWER ───
+     The nav links become a side panel sliding in from the left.
+
+     WHY transform: translateX AND NOT left/margin:
+     Animating transform does not trigger layout recalculation.
+     It runs on the GPU compositor thread, meaning it stays
+     smooth even if the main thread is busy — no jank on mobile.
+     Using left or margin would cause a layout repaint on every
+     frame and produce choppy animation on low-end devices. */
+
+  .bob_nav__links {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;                       /* full viewport height */
+    width: min(80vw, 20rem);         /* max 320px, never full screen */
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    padding: var(--bob_space_9) var(--bob_space_5) var(--bob_space_5); /* top padding = space for nav bar */
+    background: var(--bob_color_bg);
+    border-right: 1px solid var(--bob_color_border);
+    box-shadow: var(--bob_shadow_lg);
+    z-index: calc(var(--bob_z_nav) + 2);
+    overflow-y: auto;                /* scroll if links don't fit */
+    -webkit-overflow-scrolling: touch; /* momentum scroll on iOS */
+
+    /* Closed state: hidden off-screen to the left */
+    transform: translateX(-100%);
+    transition: transform var(--bob_duration_slow) var(--bob_easing);
+  }
+
+  /* Open state: slide in */
+  .bob_nav.is_open .bob_nav__links {
+    transform: translateX(0);
+  }
+
+  /* Style individual nav items as full-width rows */
+  .bob_nav__links li {
+    width: 100%;
+    border-bottom: 1px solid var(--bob_color_border);
+  }
+
+  .bob_nav__links li a {
+    display: block;
+    padding: var(--bob_space_4) var(--bob_space_3);
+    font-size: var(--bob_text_md);
+    font-weight: 500;
+    text-decoration: none;
+    min-height: var(--bob_touch_min); /* 44px touch target per item */
+    display: flex;
+    align-items: center;
+  }
+
+  .bob_nav__links li a:hover {
+    background: var(--bob_color_surface);
+  }
+}
+
+/* On desktop: hide overlay and hamburger regardless of is_open state */
+@media (min-width: 48rem) {
+  .bob_nav__overlay,
+  .bob_nav__hamburger {
+    display: none !important;
+  }
 }

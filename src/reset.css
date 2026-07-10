@@ -12,18 +12,19 @@
   box-sizing: border-box;
 }
 
-/* Smooth color scheme transition support */
 html {
   color-scheme: light dark;
-}
 
-/* Remove default margins from all common elements */
-body, h1, h2, h3, h4, h5, h6,
-p, ul, ol, figure, blockquote, dl, dd {
-  margin: 0;
+  /* Prevents any element wider than viewport from causing
+     horizontal scroll. Critical on mobile: a single element
+     with wrong padding, width or transform can silently break
+     the entire page layout and shift content sideways.
+     overflow-x on html+body together is the most reliable fix. */
+  overflow-x: hidden;
 }
 
 body {
+  overflow-x: hidden; /* belt-and-suspenders: both html and body needed */
   min-height: 100vh;
   font-family: var(--bob_font_body);
   font-size: var(--bob_text_base);
@@ -34,10 +35,25 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Responsive media by default */
+/* Remove default margins from all common elements */
+body, h1, h2, h3, h4, h5, h6,
+p, ul, ol, figure, blockquote, dl, dd {
+  margin: 0;
+}
+
+/* Responsive media by default.
+   width: 100% prevents images from overflowing their container
+   on mobile when intrinsic size is larger than viewport. */
 img, picture, video, canvas, svg {
   display: block;
   max-width: 100%;
+  width: 100%; /* prevents intrinsic-size overflow on mobile */
+  height: auto;
+}
+
+/* Exception: inline icons and logos should not stretch */
+img[width], svg[width] {
+  width: revert;
 }
 
 /* Form elements inherit font — browsers don't do this by default */
@@ -56,17 +72,18 @@ a {
 /* Pointer cursor on all buttons */
 button {
   cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
 }
 
-/* Always show focus ring for keyboard navigation.
-   Uses outline on :focus-visible so mouse users don't see it. */
+/* Always show focus ring for keyboard navigation */
 :focus-visible {
   outline: 2px solid var(--bob_color_accent);
   outline-offset: 3px;
 }
 
-/* Respect user motion preferences.
-   Disables all transitions and animations for users who prefer reduced motion. */
+/* Respect user motion preferences */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: .01ms !important;
