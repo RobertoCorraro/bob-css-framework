@@ -1,0 +1,44 @@
+/* ============================================================
+   BOB CSS FRAMEWORK — Navigation Component
+
+   Sticky on both desktop and mobile.
+   Uses backdrop-filter blur for a frosted glass effect
+   so underlying content is still readable when scrolling.
+
+   Base: bob_nav
+   Elements:
+     bob_nav__inner   — inner flex row (logo + links)
+     bob_nav__links   — horizontal list of nav links
+   ============================================================ */
+
+.bob_nav {
+  position: sticky;
+  top: 0;
+  z-index: var(--bob_z_nav);
+
+  /* Frosted glass: semi-transparent bg + blur */
+  background: color-mix(in oklab, var(--bob_color_bg) 85%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border-bottom: 1px solid var(--bob_color_border);
+}
+
+.bob_nav__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bob_space_4);
+  min-height: 3.5rem;           /* 56px — comfortable nav height */
+  padding-inline: var(--bob_bleed);
+}
+
+.bob_nav__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bob_space_4);
+  align-items: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}

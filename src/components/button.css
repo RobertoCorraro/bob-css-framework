@@ -1,0 +1,75 @@
+/* ============================================================
+   BOB CSS FRAMEWORK — Button Component
+
+   Base: bob_button
+   Modifiers:
+     bob_button__primary      — filled, brand color (default)
+     bob_button__ghost        — transparent background, border
+     bob_button__full         — always 100% width
+     bob_button__mobile_full  — 100% width on mobile only
+     bob_button__sm           — compact size
+   ============================================================ */
+
+.bob_button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--bob_space_2);
+  min-height: var(--bob_touch_min);   /* 44px touch target */
+  padding: 0.85rem 1.25rem;
+  border: 1px solid var(--bob_color_accent);
+  border-radius: var(--bob_radius_md);
+  background: var(--bob_color_accent);
+  color: var(--bob_primitive_light_plus);
+  font-weight: 600;
+  font-size: var(--bob_text_sm);
+  text-decoration: none;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition:
+    transform var(--bob_duration_fast) var(--bob_easing),
+    background-color var(--bob_duration_base) var(--bob_easing),
+    border-color var(--bob_duration_base) var(--bob_easing),
+    box-shadow var(--bob_duration_base) var(--bob_easing);
+}
+
+.bob_button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--bob_shadow_md);
+}
+
+.bob_button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* Ghost: transparent bg, visible border */
+.bob_button__ghost {
+  background: transparent;
+  color: var(--bob_color_text);
+  border-color: var(--bob_color_border);
+}
+
+.bob_button__ghost:hover {
+  background: var(--bob_color_surface);
+}
+
+/* Full width — always */
+.bob_button__full {
+  width: 100%;
+}
+
+/* Full width — mobile only (below 40rem / 640px) */
+@media (max-width: 40rem) {
+  .bob_button__mobile_full {
+    width: 100%;
+  }
+}
+
+/* Small size */
+.bob_button__sm {
+  min-height: 2rem;
+  padding: 0.45rem 0.85rem;
+  font-size: var(--bob_text_xs);
+}

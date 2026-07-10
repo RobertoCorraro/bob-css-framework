@@ -1,0 +1,47 @@
+/* ============================================================
+   BOB CSS FRAMEWORK — Utilities
+
+   Global helpers used sparingly.
+   If you find yourself repeating a utility on many elements,
+   consider creating a proper component instead.
+
+   Naming: bob_utilityname
+   All utilities use the bob_ prefix — no exceptions.
+   ============================================================ */
+
+
+/* ─── BACKGROUNDS ─── */
+
+/* Dark background with automatic text inversion */
+.bob_bg_dark {
+  background: var(--bob_primitive_dark);
+  color: var(--bob_primitive_light);
+}
+
+/* Surface background (slightly off-white / off-black) */
+.bob_bg_surface {
+  background: var(--bob_color_surface);
+}
+
+
+/* ─── TEXT ─── */
+
+.bob_text_center  { text-align: center; }
+.bob_text_muted   { color: var(--bob_color_muted); }
+
+
+/* ─── ACCESSIBILITY ─── */
+
+/* Visually hidden but accessible to screen readers.
+   Use for labels, descriptions or hints not visible on screen. */
+.bob_sr_only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

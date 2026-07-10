@@ -1,0 +1,144 @@
+/* ============================================================
+   BOB CSS FRAMEWORK — Layout
+
+   Primitives:
+   - bob_container    centered content wrapper with max-width
+   - bob_section      default section with vertical + lateral padding
+   - bob_section__full    full viewport width section
+   - bob_section__dark    inverts all color tokens locally (children update automatically)
+   - bob_section__inset   adds lateral margin so the block floats over the body background
+                          e.g. a dark card floating on a light page, like Apple product pages
+   - bob_grid_*       responsive grid utilities
+   ============================================================ */
+
+
+/* ─────────────────────────────────────────
+   CONTAINER
+   Centers content with a max readable width.
+   Uses --bob_bleed so lateral padding is consistent
+   with sections and never clips on small screens.
+   ───────────────────────────────────────── */
+
+.bob_container {
+  width: var(--bob_container);
+  margin-inline: auto;
+}
+
+
+/* ─────────────────────────────────────────
+   SECTION
+   Default section block with vertical padding
+   that grows with viewport size (clamp).
+   Lateral padding uses --bob_bleed.
+   ───────────────────────────────────────── */
+
+.bob_section {
+  padding-block: clamp(3rem, 6vw, 6rem);
+  padding-inline: var(--bob_bleed);
+}
+
+
+/* ─────────────────────────────────────────
+   FULL SECTION
+   Stretches to full viewport width.
+   Still keeps lateral padding via --bob_bleed
+   so content never touches the screen edge.
+   Combine with bob_section for vertical padding.
+   ───────────────────────────────────────── */
+
+.bob_section__full {
+  width: 100%;
+  padding-inline: var(--bob_bleed);
+}
+
+
+/* ─────────────────────────────────────────
+   DARK SECTION
+   Inverts all color tokens locally.
+   Any child component (button, card, text)
+   automatically reads the dark tokens without
+   needing extra classes. This is the same pattern
+   used by Apple, Stripe and Linear for dark sections
+   on an otherwise light page.
+
+   Usage:
+   <section class="bob_section bob_section__dark">
+     ...children get dark theme automatically...
+   </section>
+   ───────────────────────────────────────── */
+
+.bob_section__dark {
+  color-scheme: dark;
+  --bob_color_bg:      var(--bob_primitive_dark);
+  --bob_color_surface: color-mix(in oklab, var(--bob_primitive_light) 6%, var(--bob_primitive_dark));
+  --bob_color_text:    var(--bob_primitive_light);
+  --bob_color_muted:   color-mix(in oklab, var(--bob_primitive_light) 50%, var(--bob_primitive_dark));
+  --bob_color_accent:  var(--bob_primitive_light);
+  --bob_color_border:  color-mix(in oklab, var(--bob_primitive_light) 12%, transparent);
+  background: var(--bob_color_bg);
+  color: var(--bob_color_text);
+}
+
+
+/* ─────────────────────────────────────────
+   INSET SECTION
+   Adds lateral margins so the section block
+   "floats" away from the screen edges, sitting
+   over the body background color.
+
+   Classic use case: a dark section floating
+   on a light page background, like Apple's
+   product page sections.
+
+   Usage:
+   <section class="bob_section bob_section__dark bob_section__inset">
+     ...dark block floating over light body...
+   </section>
+
+   --bob_bleed is the same variable used for
+   lateral padding everywhere — this creates
+   visual rhythm between the inset margin
+   and the content padding inside sections.
+   ───────────────────────────────────────── */
+
+.bob_section__inset {
+  margin-inline: var(--bob_bleed);
+  border-radius: var(--bob_radius_lg);
+  overflow: hidden; /* clips child content to the rounded corners */
+}
+
+
+/* ─────────────────────────────────────────
+   GRIDS
+   Mobile-first. Single column by default.
+   Multi-column classes added progressively.
+   auto grid uses auto-fit + minmax so columns
+   wrap automatically without media queries.
+   ───────────────────────────────────────── */
+
+.bob_grid {
+  display: grid;
+  gap: var(--bob_space_5);
+}
+
+.bob_grid__2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.bob_grid__3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* Auto grid: fills as many columns as fit, min 16rem each.
+   Best for cards, product listings, icon grids. */
+.bob_grid__auto {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+
+/* On mobile, force single column for multi-column grids */
+@media (max-width: 40rem) {
+  .bob_grid__2,
+  .bob_grid__3 {
+    grid-template-columns: 1fr;
+  }
+}

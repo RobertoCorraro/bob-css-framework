@@ -1,0 +1,77 @@
+/* ============================================================
+   BOB CSS FRAMEWORK — Modern Accessible Reset
+
+   Philosophy:
+   - Normalize without destroying useful native behaviors.
+   - Preserve accessibility: focus, reduced-motion, color-scheme.
+   - box-sizing border-box on everything.
+   - No decorative resets — only functional ones.
+   ============================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Smooth color scheme transition support */
+html {
+  color-scheme: light dark;
+}
+
+/* Remove default margins from all common elements */
+body, h1, h2, h3, h4, h5, h6,
+p, ul, ol, figure, blockquote, dl, dd {
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+  font-family: var(--bob_font_body);
+  font-size: var(--bob_text_base);
+  line-height: 1.6;
+  background: var(--bob_color_bg);
+  color: var(--bob_color_text);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Responsive media by default */
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* Form elements inherit font — browsers don't do this by default */
+input, button, textarea, select {
+  font: inherit;
+  color: inherit;
+}
+
+/* Sensible link defaults */
+a {
+  color: inherit;
+  text-decoration-thickness: .08em;
+  text-underline-offset: .15em;
+}
+
+/* Pointer cursor on all buttons */
+button {
+  cursor: pointer;
+}
+
+/* Always show focus ring for keyboard navigation.
+   Uses outline on :focus-visible so mouse users don't see it. */
+:focus-visible {
+  outline: 2px solid var(--bob_color_accent);
+  outline-offset: 3px;
+}
+
+/* Respect user motion preferences.
+   Disables all transitions and animations for users who prefer reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
