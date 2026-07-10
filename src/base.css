@@ -1,7 +1,13 @@
 /* ============================================================
    BOB CSS FRAMEWORK — Base Styles
-   Typography, links, selection, and base layout utilities.
+
+   Covers:
+   1. Typography (h1–h4, p, lead, muted)
+   2. Semantic HTML elements (figure, details, aside, main)
+   3. Responsive image classes
+   4. Layout primitives (stack, cluster, flow)
    ============================================================ */
+
 
 /* ─── TYPOGRAPHY ─── */
 
@@ -11,27 +17,173 @@ h3 { font-size: var(--bob_text_lg);  line-height: 1.3; font-weight: 600; letter-
 h4 { font-size: var(--bob_text_md);  line-height: 1.4; font-weight: 600; }
 
 /* max-width: 65ch = optimal reading line length (~65 characters).
-   This is a max, not a fixed width — never causes overflow.
-   On mobile, paragraphs will simply be as wide as their container. */
-p  { max-width: 65ch; }
+   This is a max, never a fixed width — no overflow risk on mobile. */
+p { max-width: 65ch; }
 
-/* Muted / secondary text */
 .bob_muted {
   color: var(--bob_color_muted);
   font-size: var(--bob_text_sm);
 }
 
-/* Lead text — larger intro paragraph */
 .bob_lead {
   font-size: var(--bob_text_md);
   color: var(--bob_color_muted);
   max-width: 55ch;
 }
 
+
+/* ─── SEMANTIC HTML ELEMENTS ───
+   These elements get base styles without needing any class.
+   Using the correct semantic tag gives you accessibility
+   and SEO benefits before writing any CSS. */
+
+/* <main> must be display:block — some older browsers default it to inline */
+main {
+  display: block;
+}
+
+/* <aside>: secondary content — slightly muted to signal lower hierarchy */
+aside {
+  color: var(--bob_color_muted);
+  font-size: var(--bob_text_sm);
+  border-left: 2px solid var(--bob_color_border);
+  padding-left: var(--bob_space_4);
+}
+
+/* <figure>: image + caption container.
+   max-width: 100% prevents overflow.
+   The browser reserves space via width/height attributes on <img>
+   (see Responsive Images section). */
+figure {
+  max-width: 100%;
+  margin: 0;
+}
+
+/* <figcaption>: image description, visually secondary */
+figcaption {
+  font-size: var(--bob_text_sm);
+  color: var(--bob_color_muted);
+  margin-top: var(--bob_space_2);
+  line-height: 1.4;
+}
+
+/* <details> + <summary>: native accessible accordion.
+   No JS needed — the browser handles open/close.
+   Use for FAQ, collapsible sections, secondary info. */
+details {
+  border: 1px solid var(--bob_color_border);
+  border-radius: var(--bob_radius_md);
+  padding: var(--bob_space_3) var(--bob_space_4);
+  transition: background var(--bob_duration_base) var(--bob_easing);
+}
+
+details[open] {
+  background: var(--bob_color_surface);
+}
+
+summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: var(--bob_text_base);
+  min-height: var(--bob_touch_min);   /* 44px touch target */
+  display: flex;
+  align-items: center;
+  gap: var(--bob_space_2);
+  list-style: none;                   /* removes default marker in Safari */
+  user-select: none;
+}
+
+/* Remove default triangle in webkit */
+summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Add custom indicator arrow */
+summary::after {
+  content: '›';
+  margin-left: auto;
+  font-size: 1.2em;
+  transition: transform var(--bob_duration_base) var(--bob_easing);
+}
+
+details[open] summary::after {
+  transform: rotate(90deg);
+}
+
+/* Content inside details — add top spacing when open */
+details > *:not(summary) {
+  margin-top: var(--bob_space_3);
+  color: var(--bob_color_muted);
+  font-size: var(--bob_text_sm);
+  line-height: 1.6;
+}
+
+
+/* ─── RESPONSIVE IMAGES ───
+
+   RESET (in reset.css) already ensures:
+   - max-width: 100%  → image never overflows container
+   - width: 100%      → image fills container by default
+   - height: auto     → aspect ratio preserved
+   - img[width] revert → icons/logos with width attr keep their size
+
+   ALWAYS ADD width and height attributes on <img>:
+   <img src="photo.jpg" alt="..." width="1200" height="800">
+   The browser uses these to calculate aspect ratio BEFORE
+   the image loads, reserving the correct space in the layout.
+   This prevents Cumulative Layout Shift (CLS) — a Core Web Vitals
+   metric that directly impacts Google ranking and perceived performance.
+
+   FOR RESPONSIVE IMAGES with multiple sources, use <picture>:
+   <picture>
+     <source media="(min-width: 48rem)" srcset="desktop.webp" type="image/webp">
+     <img src="mobile.webp" alt="..." width="800" height="600" loading="lazy">
+   </picture>
+
+   loading="lazy" defers off-screen images — always use it
+   except on above-the-fold hero images (use loading="eager" there).
+   ─────────────────────────────────────────────────────────── */
+
+/* bob_figure: semantic figure wrapper with overflow protection */
+.bob_figure {
+  max-width: 100%;
+  overflow: hidden;                    /* clips overflowing img corners */
+  border-radius: var(--bob_radius_md);
+}
+
+/* bob_img: responsive image that fills its container */
+.bob_img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;                   /* crop instead of distort */
+}
+
+/* bob_img__contain: show full image without cropping.
+   Use for logos, illustrations, product shots where cropping is wrong. */
+.bob_img__contain {
+  object-fit: contain;
+}
+
+/* bob_img__square: forces a 1:1 aspect ratio.
+   Use for avatars, thumbnails, profile pictures. */
+.bob_img__square {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+/* bob_img__video: forces 16:9 aspect ratio.
+   Use for video thumbnails, embed wrappers, landscape shots. */
+.bob_img__video {
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+
 /* ─── LAYOUT PRIMITIVES ─── */
 
-/* Stack: vertical flow with consistent gap between children.
-   Uses grid (not flex) to avoid margin-collapsing issues. */
+/* Stack: vertical flow with consistent gap.
+   Uses grid to avoid margin-collapsing issues. */
 .bob_stack {
   display: grid;
   gap: var(--bob_space_5);
@@ -47,7 +199,7 @@ p  { max-width: 65ch; }
 }
 
 /* Flow: margin-top on all children except the first.
-   Simpler than stack for prose / article content. */
+   Best for prose / article content. */
 .bob_flow > * + * {
   margin-top: var(--bob_space_4);
 }

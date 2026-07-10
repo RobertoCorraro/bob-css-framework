@@ -32,19 +32,83 @@ BOB uses a custom BEM-inspired convention optimized for easy selection and fast 
 
 ---
 
+## Semantic HTML
+
+BOB is designed to work with native HTML semantic elements. Every BOB class is meant to be applied to the correct semantic tag — not a generic `<div>`.
+
+Using the right HTML element gives you accessibility, SEO and keyboard navigation for free, before writing a single line of CSS.
+
+| BOB Class | Correct HTML tag | Why |
+|---|---|---|
+| `bob_nav` | `<nav>` | Landmark for screen readers and keyboard navigation |
+| `bob_hero` | `<section>` or `<header>` | Self-contained page region |
+| `bob_section` | `<section>` | Thematic group of content |
+| `bob_section__dark` | `<section>` | Same — modifier changes theme, not meaning |
+| `bob_section__inset` | `<section>` | Same — modifier changes layout, not meaning |
+| `bob_page` | `<body>` or `<main>` | Top-level page grid |
+| `bob_container` | `<div>` inside `<section>` | Layout wrapper only, no semantic meaning |
+| `bob_card` | `<article>` | Self-contained, reusable content unit |
+| `bob_button` | `<button>` or `<a>` | Use `<button>` for actions, `<a>` for navigation |
+| `bob_stack` / `bob_cluster` | `<div>`, `<ul>`, `<ol>` | Pure layout — match the list meaning if content is a list |
+| `bob_lead` / `bob_muted` | `<p>` | Paragraph-level text |
+
+### Native elements styled by default
+
+BOB provides base styles for these semantic elements without any class needed:
+
+- `<figure>` + `<figcaption>` — responsive image with muted caption.
+- `<details>` + `<summary>` — accessible accordion / FAQ, no JS required.
+- `<aside>` — secondary content, muted style.
+- `<main>` — correct block display guaranteed.
+- `<h1>`–`<h4>` — fluid typographic scale with tight line-height.
+
+---
+
+## Responsive Images
+
+BOB handles responsive images at the reset level so they never overflow their container.
+
+For simple images:
+```html
+<img src="image.jpg" alt="Description" width="800" height="600">
+```
+
+For art-direction (different image per breakpoint) use `<picture>`:
+```html
+<picture>
+  <source media="(min-width: 48rem)" srcset="image-desktop.webp">
+  <source media="(min-width: 30rem)" srcset="image-tablet.webp">
+  <img src="image-mobile.webp" alt="Description" width="800" height="600" loading="lazy">
+</picture>
+```
+
+For fluid responsive images in a content area use `bob_img`:
+```html
+<figure class="bob_figure">
+  <img class="bob_img" src="image.jpg" alt="Description" width="1200" height="800" loading="lazy">
+  <figcaption>Caption text here</figcaption>
+</figure>
+```
+
+**Always include `width` and `height` attributes** on `<img>` tags.
+This lets the browser reserve the correct space before the image loads,
+preventing Cumulative Layout Shift (CLS) — a Core Web Vitals metric.
+
+---
+
 ## Architecture
 
 ```
 src/
   tokens.css          ← design tokens (primitives + semantics)
   reset.css           ← modern accessible CSS reset
-  base.css            ← typography, links, base utilities
+  base.css            ← typography, semantic elements, layout primitives
   layout/
-    layout.css        ← container, section, grid, stack, cluster
+    layout.css        ← container, section, hero, grid
   components/
     button.css
     card.css
-    nav.css
+    nav.css           ← includes mobile hamburger + side drawer
   utilities/
     utilities.css
   bob.css             ← main entry point, imports all layers
@@ -68,16 +132,11 @@ Changing a primitive automatically updates all semantic tokens that reference it
 
 ## Accessibility
 
-- Minimum touch target: 44px recommended for primary interactive controls.
-- Focus states are always visible.
+- Minimum touch target: 44px on all interactive elements.
+- Focus states always visible via `:focus-visible`.
 - Motion respects `prefers-reduced-motion`.
-- Components use semantic HTML and correct ARIA where needed.
-
----
-
-## Button Policy
-
-Primary CTA buttons are full width on mobile when that improves clarity and conversion.
+- Semantic HTML elements used throughout — no ARIA hacks.
+- Drawer navigation uses `aria-expanded` and `aria-controls`.
 
 ---
 
