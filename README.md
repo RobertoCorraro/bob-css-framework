@@ -1,22 +1,39 @@
 # BOB CSS Framework
 
-BOB CSS Framework is a small, modern, accessible CSS foundation built for fast product delivery and high conversion.
+BOB CSS Framework is a minimal, token-driven CSS foundation built for fast product delivery,
+high conversion and Apple/Linear-level visual quality with minimal code.
+
+---
+
+## Philosophy
+
+BOB is built on one principle: **the right decision at the token level makes every component correct by default.**
+
+Instead of writing many component-specific rules, BOB defines a small set of design decisions
+once — in tokens — and lets them propagate across the entire system automatically.
+Change one primitive and the whole interface updates. No find-and-replace. No inconsistencies.
+
+This is the same approach used by Linear, Stripe, Vercel and Apple’s design systems.
+
+BOB is NOT Tailwind (utility-first). BOB is NOT Bootstrap (component library).
+BOB is a design system foundation: tokens + reset + semantic base + composable layout primitives.
 
 ---
 
 ## Principles
 
-- Mobile-first.
-- Accessible by default.
-- Minimal CSS, maximum consistency.
-- Token-driven design.
-- Component-based architecture.
+- **Mobile-first** — base styles target mobile, desktop is progressive enhancement.
+- **Accessible by default** — 44px touch targets, visible focus, reduced-motion support.
+- **Semantic HTML** — correct HTML tags, not `<div>` for everything.
+- **Token-driven** — all visual decisions live in tokens, never hardcoded.
+- **Minimal CSS** — write less, get more consistency.
+- **GPU-safe animations** — only `transform` and `opacity` are animated, never layout properties.
 
 ---
 
 ## Naming Convention
 
-BOB uses a custom BEM-inspired convention optimized for easy selection and fast copying (double-click selects the entire class name):
+BOB uses a custom BEM-inspired convention optimized for easy selection (double-click = full class name):
 
 | Part | Separator | Example |
 |---|---|---|
@@ -24,75 +41,77 @@ BOB uses a custom BEM-inspired convention optimized for easy selection and fast 
 | Element | `__` double underscore | `bob_button__icon` |
 | Modifier | `_` single underscore | `bob_button__icon_primary` |
 
-### Rules
+### Decision rule
 
-- If a style is **specific to one component**, use a component modifier: `bob_button__ghost`.
-- If a style is **reusable across any element**, use a global utility: `bob_bg_dark`.
-- If a visual change is **global or theme-wide**, define it with tokens — not component modifiers.
+- Style **specific to one component** → component modifier: `bob_button__ghost`
+- Style **reusable across elements** → global utility: `bob_bg_dark`
+- Style **theme-wide** → token only, never a class
 
 ---
 
 ## Semantic HTML
 
-BOB is designed to work with native HTML semantic elements. Every BOB class is meant to be applied to the correct semantic tag — not a generic `<div>`.
+BOB is designed to work with native HTML semantic elements.
+Every BOB class must be applied to the correct semantic tag — not a generic `<div>`.
 
-Using the right HTML element gives you accessibility, SEO and keyboard navigation for free, before writing a single line of CSS.
+Using the right HTML element gives you accessibility, SEO and keyboard navigation
+for free, before writing a single line of CSS.
 
 | BOB Class | Correct HTML tag | Why |
 |---|---|---|
 | `bob_nav` | `<nav>` | Landmark for screen readers and keyboard navigation |
 | `bob_hero` | `<section>` or `<header>` | Self-contained page region |
 | `bob_section` | `<section>` | Thematic group of content |
-| `bob_section__dark` | `<section>` | Same — modifier changes theme, not meaning |
-| `bob_section__inset` | `<section>` | Same — modifier changes layout, not meaning |
 | `bob_page` | `<body>` or `<main>` | Top-level page grid |
-| `bob_container` | `<div>` inside `<section>` | Layout wrapper only, no semantic meaning |
+| `bob_container` | `<div>` inside `<section>` | Layout wrapper, no semantic meaning |
 | `bob_card` | `<article>` | Self-contained, reusable content unit |
-| `bob_button` | `<button>` or `<a>` | Use `<button>` for actions, `<a>` for navigation |
-| `bob_stack` / `bob_cluster` | `<div>`, `<ul>`, `<ol>` | Pure layout — match the list meaning if content is a list |
+| `bob_button` | `<button>` or `<a>` | `<button>` for actions, `<a>` for navigation |
+| `bob_stack` / `bob_cluster` | `<div>`, `<ul>`, `<ol>` | Match content meaning |
 | `bob_lead` / `bob_muted` | `<p>` | Paragraph-level text |
 
-### Native elements styled by default
-
-BOB provides base styles for these semantic elements without any class needed:
+### Native elements styled automatically
 
 - `<figure>` + `<figcaption>` — responsive image with muted caption.
-- `<details>` + `<summary>` — accessible accordion / FAQ, no JS required.
+- `<details>` + `<summary>` — accessible accordion, no JS required.
 - `<aside>` — secondary content, muted style.
-- `<main>` — correct block display guaranteed.
-- `<h1>`–`<h4>` — fluid typographic scale with tight line-height.
+- `<main>` — correct block display on all browsers.
+- `<h1>`–`<h4>` — fluid typographic scale.
 
 ---
 
 ## Responsive Images
 
-BOB handles responsive images at the reset level so they never overflow their container.
+BOB handles responsive images at the reset level. Images never overflow their container.
 
-For simple images:
-```html
-<img src="image.jpg" alt="Description" width="800" height="600">
-```
+**Always add `width` and `height` on every `<img>`.**
+The browser uses them to reserve space before the image loads,
+preventing layout shift (CLS) — a Core Web Vitals metric that affects Google ranking.
 
-For art-direction (different image per breakpoint) use `<picture>`:
 ```html
+<!-- Simple image -->
+<img src="photo.jpg" alt="Description" width="1200" height="800" loading="lazy">
+
+<!-- Art direction: different image per breakpoint -->
 <picture>
-  <source media="(min-width: 48rem)" srcset="image-desktop.webp">
-  <source media="(min-width: 30rem)" srcset="image-tablet.webp">
-  <img src="image-mobile.webp" alt="Description" width="800" height="600" loading="lazy">
+  <source media="(min-width: 48rem)" srcset="desktop.webp" type="image/webp">
+  <img src="mobile.webp" alt="Description" width="800" height="600" loading="lazy">
 </picture>
-```
 
-For fluid responsive images in a content area use `bob_img`:
-```html
+<!-- Responsive image with caption -->
 <figure class="bob_figure">
-  <img class="bob_img" src="image.jpg" alt="Description" width="1200" height="800" loading="lazy">
-  <figcaption>Caption text here</figcaption>
+  <img class="bob_img" src="photo.jpg" alt="Description" width="1200" height="800" loading="lazy">
+  <figcaption>Caption text</figcaption>
 </figure>
 ```
 
-**Always include `width` and `height` attributes** on `<img>` tags.
-This lets the browser reserve the correct space before the image loads,
-preventing Cumulative Layout Shift (CLS) — a Core Web Vitals metric.
+Use `loading="eager"` only on above-the-fold hero images.
+
+| Class | Use |
+|---|---|
+| `bob_img` | Fluid, fills container, `object-fit: cover` |
+| `bob_img__contain` | Logos, illustrations — no cropping |
+| `bob_img__square` | Avatars, thumbnails — 1:1 ratio |
+| `bob_img__video` | Video covers, banners — 16:9 ratio |
 
 ---
 
@@ -100,21 +119,22 @@ preventing Cumulative Layout Shift (CLS) — a Core Web Vitals metric.
 
 ```
 src/
-  tokens.css          ← design tokens (primitives + semantics)
+  tokens.css          ← primitives + semantic design tokens
   reset.css           ← modern accessible CSS reset
-  base.css            ← typography, semantic elements, layout primitives
+  base.css            ← typography, semantic elements, responsive images
   layout/
-    layout.css        ← container, section, hero, grid
+    layout.css        ← container, hero, section, grid, page
   components/
     button.css
     card.css
     nav.css           ← includes mobile hamburger + side drawer
   utilities/
     utilities.css
-  bob.css             ← main entry point, imports all layers
+  bob.css             ← main entry point (import order is critical)
 docs/
   naming-convention.md
   architecture.md
+AGENTS.md             ← technical philosophy for AI agents and contributors
 ```
 
 ---
@@ -123,34 +143,36 @@ docs/
 
 Tokens are split into two levels:
 
-1. **Primitives** — raw values, never used directly in components.
+1. **Primitives** — raw values, never used in components directly.
 2. **Semantics** — meaningful tokens used by all components.
 
-Changing a primitive automatically updates all semantic tokens that reference it.
-
----
-
-## Accessibility
-
-- Minimum touch target: 44px on all interactive elements.
-- Focus states always visible via `:focus-visible`.
-- Motion respects `prefers-reduced-motion`.
-- Semantic HTML elements used throughout — no ARIA hacks.
-- Drawer navigation uses `aria-expanded` and `aria-controls`.
+Change one primitive → all semantic tokens that reference it update automatically.
+Change a semantic token → all components update automatically.
 
 ---
 
 ## Dark Section Pattern
 
-Any section can become dark without touching its children:
+Any section becomes dark without modifying its children:
 
 ```html
 <section class="bob_section bob_section__dark bob_section__inset">
-  <!-- all children automatically read the dark tokens -->
+  <!-- children automatically inherit dark tokens -->
 </section>
 ```
 
-`bob_section__inset` adds lateral margins so the dark block floats over the light body, like Apple product pages.
+`bob_section__dark` overrides semantic tokens locally via CSS custom property inheritance.
+`bob_section__inset` floats the block over the body background with lateral margins and rounded corners — the Apple product page pattern.
+
+---
+
+## Accessibility
+
+- 44px minimum touch target on all interactive elements.
+- Focus always visible via `:focus-visible`.
+- Motion respects `prefers-reduced-motion`.
+- Semantic HTML throughout — no ARIA patches for wrong elements.
+- Hamburger nav uses `aria-expanded` and `aria-controls`.
 
 ---
 
@@ -160,8 +182,10 @@ Any section can become dark without touching its children:
 <link rel="stylesheet" href="src/bob.css">
 ```
 
-Or with Vite/PostCSS build:
+With Vite or PostCSS:
 
 ```js
 import './src/bob.css'
 ```
+
+For AI agents and contributors, read `AGENTS.md` before modifying any file.
