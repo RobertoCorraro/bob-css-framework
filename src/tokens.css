@@ -20,34 +20,33 @@
      in components — always go through semantic tokens.
      ───────────────────────────────────────── */
 
-  --bob_primitive_light_plus: #ffffff;    /* pure white, lightest surface */
-  --bob_primitive_light:      #f9fafb;    /* base light background */
-  --bob_primitive_dark:       #111827;    /* base dark background */
-  --bob_primitive_dark_plus:  #060912;    /* deepest dark, for layering */
-  --bob_primitive_brand:      #111827;    /* brand accent — replace this single value to rebrand */
+  --bob_primitive_light_plus: #ffffff;
+  --bob_primitive_light:      #f9fafb;
+  --bob_primitive_dark:       #111827;
+  --bob_primitive_dark_plus:  #060912;
+  --bob_primitive_brand:      #111827;
 
 
   /* ─────────────────────────────────────────
      SEMANTIC COLORS
      Only 6 tokens. All components use these.
-     Derived from primitives via color-mix() in oklab
-     for perceptually accurate blending (no muddy grays).
+     Derived via color-mix() in oklab for perceptually
+     accurate blending — no muddy or washed-out results.
      ───────────────────────────────────────── */
 
-  --bob_color_bg:      var(--bob_primitive_light_plus);  /* page background */
-  --bob_color_surface: var(--bob_primitive_light);       /* cards, modals, inputs */
-  --bob_color_text:    var(--bob_primitive_dark);        /* primary text */
-  --bob_color_muted:   color-mix(in oklab, var(--bob_primitive_dark) 45%, var(--bob_primitive_light)); /* secondary text, placeholders */
-  --bob_color_accent:  var(--bob_primitive_brand);       /* buttons, links, focus */
-  --bob_color_border:  color-mix(in oklab, var(--bob_primitive_dark) 10%, transparent); /* all borders */
+  --bob_color_bg:      var(--bob_primitive_light_plus);
+  --bob_color_surface: var(--bob_primitive_light);
+  --bob_color_text:    var(--bob_primitive_dark);
+  --bob_color_muted:   color-mix(in oklab, var(--bob_primitive_dark) 45%, var(--bob_primitive_light));
+  --bob_color_accent:  var(--bob_primitive_brand);
+  --bob_color_border:  color-mix(in oklab, var(--bob_primitive_dark) 10%, transparent);
 
 
   /* ─────────────────────────────────────────
-     SPACING
-     4pt scale (0.25rem = 4px).
-     Use these for padding, margin AND gap — no separate gap variables.
-     Names (1–10) are intentionally abstract so they don't
-     break if you change the base unit.
+     SPACING — 4pt scale
+     Use for padding, margin AND gap.
+     Names (1–10) are abstract: they don't break
+     if you change the base unit.
      ───────────────────────────────────────── */
 
   --bob_space_1:  0.25rem;   /*  4px */
@@ -66,70 +65,110 @@
      LAYOUT
 
      --bob_bleed:
-       The lateral breathing room between content and screen edge.
-       Used by sections and containers as padding-inline.
-       Grows with viewport width using clamp() so narrow screens
-       get a compact margin and wide screens get generous space.
-       Also used by bob_section__inset to "float" a block
-       away from the screen edges.
+       Lateral breathing room between content and screen edge.
+       Grows with viewport via clamp() — no breakpoints needed.
+       Used by sections, containers, inset blocks and the nav.
+       All lateral spacing derives from this single value,
+       creating automatic visual rhythm across the page.
 
      --bob_container:
-       Max readable width for content areas.
-       Uses min() so it never overflows on small screens.
-       Centered with margin-inline: auto in .bob_container.
+       Max readable width. min() prevents overflow on small screens.
 
      --bob_touch_min:
-       Minimum height/width for interactive elements (buttons, inputs).
-       2.75rem = 44px — the recommended touch target per Apple HIG and WCAG.
+       44px — minimum touch target per Apple HIG and WCAG 2.5.5.
 
      --bob_hero_min:
-       Uses 100dvh (dynamic viewport height) instead of 100vh.
-       On mobile, vh is calculated from the full browser window including
-       the address bar and toolbars — so 100vh is taller than the visible area
-       and causes a layout jump when the browser UI hides on scroll.
-       dvh updates dynamically to the actual visible viewport,
-       so the hero always fits perfectly without overflow.
+       100dvh — dynamic viewport height.
+       Unlike vh, dvh updates when mobile browser UI hides on scroll,
+       preventing the hero from overflowing or jumping.
      ───────────────────────────────────────── */
 
-  --bob_bleed:      clamp(1rem, 5vw, 4rem);                       /* lateral page margin */
-  --bob_container:  min(100% - var(--bob_bleed) * 2, 80rem);      /* max content width */
-  --bob_touch_min:  2.75rem;                                       /* 44px min touch target */
-  --bob_hero_min:   100dvh;                                        /* dynamic viewport height for hero sections */
+  --bob_bleed:      clamp(1rem, 5vw, 4rem);
+  --bob_container:  min(100% - var(--bob_bleed) * 2, 80rem);
+  --bob_touch_min:  2.75rem;
+  --bob_hero_min:   100dvh;
 
 
   /* ─────────────────────────────────────────
-     TYPOGRAPHY
-     Fluid scale using clamp(min, preferred, max).
-     No media queries needed — size adapts to viewport.
-     Use bob_text_2xl and bob_text_3xl for hero headlines only.
+     TYPOGRAPHY — fluid scale
+
+     HOW IT WORKS:
+     clamp(MIN, PREFERRED, MAX)
+
+     MIN  = smallest the text will ever be (on ~320px screens)
+     PREFERRED = fluid middle value: a fixed base + a vw portion
+                 the vw makes it grow proportionally with the viewport
+     MAX  = largest it will ever be (on wide desktop screens)
+
+     The PREFERRED formula: base + multiplier * vw
+     where multiplier controls how aggressively it grows.
+     A higher multiplier = faster growth = more contrast between devices.
+
+     CALIBRATION TARGETS (matching Linear, Vercel, Stripe):
+     xs:   12px mobile  → 13px desktop
+     sm:   14px mobile  → 16px desktop
+     base: 16px mobile  → 20px desktop   ← body text, modern desktop standard
+     md:   18px mobile  → 24px desktop   ← large body, lead paragraphs
+     lg:   24px mobile  → 36px desktop   ← h3, section subtitles
+     xl:   32px mobile  → 56px desktop   ← h2, section headings
+     2xl:  44px mobile  → 72px desktop   ← h1, page headings
+     3xl:  56px mobile  → 104px desktop  ← hero only, editorial impact
+
+     WHY 20px FOR BODY ON DESKTOP:
+     Modern design systems (Linear, Vercel, Apple) use 18–20px
+     for body text on large screens. At 1rem = 16px baseline,
+     text at 16px on a 27" monitor reads as visually small.
+     The extra size improves scannability and perceived quality.
+     On mobile, 16px is perfect — the screen is close to the eye.
      ───────────────────────────────────────── */
 
-  --bob_font_body:  system-ui, -apple-system, sans-serif;
+  --bob_font_body: system-ui, -apple-system, sans-serif;
 
-  --bob_text_xs:   clamp(0.75rem,   0.72rem + 0.15vw,  0.8125rem);
-  --bob_text_sm:   clamp(0.875rem,  0.85rem + 0.15vw,  0.9375rem);
-  --bob_text_base: clamp(1rem,      0.95rem + 0.25vw,  1.0625rem);
-  --bob_text_md:   clamp(1.125rem,  1rem    + 0.6vw,   1.3125rem);
-  --bob_text_lg:   clamp(1.5rem,    1.2rem  + 1.5vw,   2rem);
-  --bob_text_xl:   clamp(2rem,      1.4rem  + 2.5vw,   3.25rem);
-  --bob_text_2xl:  clamp(2.5rem,    1.6rem  + 4vw,     5rem);
-  --bob_text_3xl:  clamp(3.5rem,    2rem    + 6vw,     8rem);    /* hero only */
+  /* xs: captions, badges, fine print */
+  --bob_text_xs:   clamp(0.75rem,  0.72rem + 0.16vw, 0.8125rem);
+  /*              min=12px         fluid           max=13px */
+
+  /* sm: secondary text, labels, nav links */
+  --bob_text_sm:   clamp(0.875rem, 0.82rem + 0.28vw, 1rem);
+  /*              min=14px          fluid           max=16px */
+
+  /* base: body text — 16px mobile, 20px desktop */
+  --bob_text_base: clamp(1rem,     0.875rem + 0.63vw, 1.25rem);
+  /*              min=16px          fluid            max=20px */
+
+  /* md: lead paragraphs, large body, card descriptions */
+  --bob_text_md:   clamp(1.125rem, 0.95rem + 0.88vw, 1.5rem);
+  /*              min=18px          fluid            max=24px */
+
+  /* lg: h3, section subtitles, prominent labels */
+  --bob_text_lg:   clamp(1.5rem,   1.1rem + 2vw,     2.25rem);
+  /*              min=24px          fluid            max=36px */
+
+  /* xl: h2, section headings */
+  --bob_text_xl:   clamp(2rem,     1.2rem + 4vw,     3.5rem);
+  /*              min=32px          fluid            max=56px */
+
+  /* 2xl: h1, page-level headings */
+  --bob_text_2xl:  clamp(2.75rem,  1.5rem + 6.25vw,  4.5rem);
+  /*              min=44px           fluid            max=72px */
+
+  /* 3xl: hero headlines only — editorial impact at large sizes */
+  --bob_text_3xl:  clamp(3.5rem,   1.5rem + 10vw,    6.5rem);
+  /*              min=56px           fluid            max=104px */
 
 
   /* ─────────────────────────────────────────
      BORDER RADIUS
      ───────────────────────────────────────── */
 
-  --bob_radius_sm:   0.375rem;   /* small: badges, tags */
-  --bob_radius_md:   0.625rem;   /* default: buttons, inputs */
-  --bob_radius_lg:   1rem;       /* large: cards, inset sections */
-  --bob_radius_pill: 999rem;     /* pill: full-round buttons */
+  --bob_radius_sm:   0.375rem;   /* badges, tags */
+  --bob_radius_md:   0.625rem;   /* buttons, inputs */
+  --bob_radius_lg:   1rem;       /* cards, inset sections */
+  --bob_radius_pill: 999rem;     /* full-round */
 
 
   /* ─────────────────────────────────────────
-     SHADOWS
-     Layered, soft — inspired by Linear and Vercel.
-     Never heavy or decorative.
+     SHADOWS — soft, layered, never decorative
      ───────────────────────────────────────── */
 
   --bob_shadow_sm: 0 1px 2px rgba(0,0,0,.06), 0 1px 3px rgba(0,0,0,.08);
@@ -139,20 +178,18 @@
 
   /* ─────────────────────────────────────────
      MOTION
-     Always wrap animations in prefers-reduced-motion
-     (handled in reset.css).
+     Always wrap in prefers-reduced-motion (reset.css).
      ───────────────────────────────────────── */
 
   --bob_duration_fast:   120ms;
   --bob_duration_base:   200ms;
   --bob_duration_slow:   350ms;
-  --bob_easing:          cubic-bezier(0.4, 0, 0.2, 1);       /* standard */
-  --bob_easing_spring:   cubic-bezier(0.34, 1.56, 0.64, 1);  /* bouncy */
+  --bob_easing:          cubic-bezier(0.4, 0, 0.2, 1);
+  --bob_easing_spring:   cubic-bezier(0.34, 1.56, 0.64, 1);
 
 
   /* ─────────────────────────────────────────
-     Z-INDEX SCALE
-     Use only these values to avoid z-index wars.
+     Z-INDEX — use only these values
      ───────────────────────────────────────── */
 
   --bob_z_nav:   10;
@@ -163,7 +200,7 @@
 
 /* ─────────────────────────────────────────
    GLOBAL DARK THEME
-   Applied when data-theme="dark" is set on <html> or <body>.
+   Activated via data-theme="dark" on <html> or <body>.
    Only semantic tokens are overridden — primitives stay the same.
    ───────────────────────────────────────── */
 
