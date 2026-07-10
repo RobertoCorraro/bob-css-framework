@@ -5,7 +5,6 @@
    1. Primitives  — raw values, never use directly in components.
    2. Semantics   — meaningful tokens, used by all components.
    3. Dark theme  — overrides only the semantic tokens.
-   4. Dark block  — local dark context for any section.
 
    HOW IT WORKS:
    Change a primitive → all semantic tokens that reference it update automatically.
@@ -25,7 +24,7 @@
   --bob_primitive_light:      #f9fafb;    /* base light background */
   --bob_primitive_dark:       #111827;    /* base dark background */
   --bob_primitive_dark_plus:  #060912;    /* deepest dark, for layering */
-  --bob_primitive_brand:      #111827;    /* brand accent — replace this to rebrand */
+  --bob_primitive_brand:      #111827;    /* brand accent — replace this single value to rebrand */
 
 
   /* ─────────────────────────────────────────
@@ -81,12 +80,21 @@
 
      --bob_touch_min:
        Minimum height/width for interactive elements (buttons, inputs).
-       44px is the recommended touch target per Apple HIG and WCAG.
+       2.75rem = 44px — the recommended touch target per Apple HIG and WCAG.
+
+     --bob_hero_min:
+       Uses 100dvh (dynamic viewport height) instead of 100vh.
+       On mobile, vh is calculated from the full browser window including
+       the address bar and toolbars — so 100vh is taller than the visible area
+       and causes a layout jump when the browser UI hides on scroll.
+       dvh updates dynamically to the actual visible viewport,
+       so the hero always fits perfectly without overflow.
      ───────────────────────────────────────── */
 
-  --bob_bleed:       clamp(1rem, 5vw, 4rem);              /* lateral page margin */
-  --bob_container:   min(100% - var(--bob_bleed) * 2, 80rem); /* max content width */
-  --bob_touch_min:   2.75rem;                              /* 44px min touch target */
+  --bob_bleed:      clamp(1rem, 5vw, 4rem);                       /* lateral page margin */
+  --bob_container:  min(100% - var(--bob_bleed) * 2, 80rem);      /* max content width */
+  --bob_touch_min:  2.75rem;                                       /* 44px min touch target */
+  --bob_hero_min:   100dvh;                                        /* dynamic viewport height for hero sections */
 
 
   /* ─────────────────────────────────────────
@@ -114,7 +122,7 @@
 
   --bob_radius_sm:   0.375rem;   /* small: badges, tags */
   --bob_radius_md:   0.625rem;   /* default: buttons, inputs */
-  --bob_radius_lg:   1rem;       /* large: cards, sections inset */
+  --bob_radius_lg:   1rem;       /* large: cards, inset sections */
   --bob_radius_pill: 999rem;     /* pill: full-round buttons */
 
 

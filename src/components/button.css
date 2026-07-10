@@ -3,11 +3,18 @@
 
    Base: bob_button
    Modifiers:
-     bob_button__primary      — filled, brand color (default)
-     bob_button__ghost        — transparent background, border
+     bob_button__ghost        — transparent background, visible border
      bob_button__full         — always 100% width
      bob_button__mobile_full  — 100% width on mobile only
      bob_button__sm           — compact size
+
+   NOTE on padding units:
+   Button padding uses `em` (not rem) so it scales
+   proportionally with the button's own font-size.
+   If you change font-size on bob_button__sm, the
+   padding automatically adjusts — no override needed.
+   This is the component-scoped spacing pattern
+   recommended for reusable UI components.
    ============================================================ */
 
 .bob_button {
@@ -16,7 +23,10 @@
   justify-content: center;
   gap: var(--bob_space_2);
   min-height: var(--bob_touch_min);   /* 44px touch target */
-  padding: 0.85rem 1.25rem;
+
+  /* em padding: scales with this element's font-size */
+  padding: 0.85em 1.25em;
+
   border: 1px solid var(--bob_color_accent);
   border-radius: var(--bob_radius_md);
   background: var(--bob_color_accent);
@@ -60,16 +70,18 @@
   width: 100%;
 }
 
-/* Full width — mobile only (below 40rem / 640px) */
+/* Full width — mobile only (below 40rem ≈ 640px)
+   Media query in rem respects user font-size preferences.
+   This is more accessible than px breakpoints. */
 @media (max-width: 40rem) {
   .bob_button__mobile_full {
     width: 100%;
   }
 }
 
-/* Small size */
+/* Small size: padding scales automatically via em */
 .bob_button__sm {
   min-height: 2rem;
-  padding: 0.45rem 0.85rem;
   font-size: var(--bob_text_xs);
+  /* no padding override needed — em scales with font-size above */
 }

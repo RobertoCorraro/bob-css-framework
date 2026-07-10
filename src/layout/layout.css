@@ -2,13 +2,17 @@
    BOB CSS FRAMEWORK — Layout
 
    Primitives:
-   - bob_container    centered content wrapper with max-width
-   - bob_section      default section with vertical + lateral padding
+   - bob_container        centered content wrapper with max-width
+   - bob_page             full-page grid: 3-column pattern (gutters + content)
+   - bob_hero             full dynamic viewport height section
+   - bob_section          default section with vertical + lateral padding
    - bob_section__full    full viewport width section
-   - bob_section__dark    inverts all color tokens locally (children update automatically)
-   - bob_section__inset   adds lateral margin so the block floats over the body background
-                          e.g. a dark card floating on a light page, like Apple product pages
-   - bob_grid_*       responsive grid utilities
+   - bob_section__dark    inverts all color tokens locally
+   - bob_section__inset   floats a block over the body background
+   - bob_grid             base grid with gap
+   - bob_grid__2/3        fixed column grids
+   - bob_grid__auto       auto-fit: cards expand to fill available space
+   - bob_grid__fill       auto-fill: keeps empty tracks, cards stay fixed-width
    ============================================================ */
 
 
@@ -22,6 +26,71 @@
 .bob_container {
   width: var(--bob_container);
   margin-inline: auto;
+}
+
+
+/* ─────────────────────────────────────────
+   PAGE — 3-column grid pattern
+   Used for full-bleed page layouts where you want
+   a centered content column with automatic gutters.
+
+   Structure:
+     column 1: 1fr  → left gutter (grows with viewport)
+     column 2: min(calc(100% - var(--bob_bleed) * 2), 80rem)  → content
+     column 3: 1fr  → right gutter (grows with viewport)
+
+   Children spanning all 3 columns (full-bleed) use:
+     grid-column: 1 / -1;
+   Children in the centered content column use:
+     grid-column: 2;
+
+   This is the pattern used by Awwwards-level sites to mix
+   full-bleed sections with contained content areas
+   without wrapper divs.
+   ───────────────────────────────────────── */
+
+.bob_page {
+  display: grid;
+  grid-template-columns:
+    1fr
+    min(calc(100% - var(--bob_bleed) * 2), 80rem)
+    1fr;
+}
+
+.bob_page > * {
+  grid-column: 2; /* default: all children in the content column */
+}
+
+.bob_page__bleed {
+  grid-column: 1 / -1; /* override: stretch this child full width */
+}
+
+
+/* ─────────────────────────────────────────
+   HERO
+   Full dynamic viewport height.
+
+   WHY dvh AND NOT vh:
+   On mobile, `vh` is calculated from the total browser window
+   height including the address bar and bottom toolbar.
+   When the user scrolls and the browser UI hides,
+   the visible area grows — but vh stays the same,
+   causing the hero to appear taller than the screen
+   or to jump when the UI changes.
+
+   `dvh` (dynamic viewport height) updates in real time
+   to the actual visible area, so the hero always
+   fills exactly what the user sees — no overflow,
+   no jumps on scroll.
+   ───────────────────────────────────────── */
+
+.bob_hero {
+  min-height: var(--bob_hero_min); /* 100dvh — see tokens.css */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: clamp(4rem, 10vw, 8rem);
+  padding-inline: var(--bob_bleed);
 }
 
 
@@ -104,16 +173,14 @@
 .bob_section__inset {
   margin-inline: var(--bob_bleed);
   border-radius: var(--bob_radius_lg);
-  overflow: hidden; /* clips child content to the rounded corners */
+  overflow: hidden;
 }
 
 
 /* ─────────────────────────────────────────
    GRIDS
    Mobile-first. Single column by default.
-   Multi-column classes added progressively.
-   auto grid uses auto-fit + minmax so columns
-   wrap automatically without media queries.
+   Multi-column classes added via modifiers.
    ───────────────────────────────────────── */
 
 .bob_grid {
@@ -129,16 +196,52 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-/* Auto grid: fills as many columns as fit, min 16rem each.
-   Best for cards, product listings, icon grids. */
-.bob_grid__auto {
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
-}
-
-/* On mobile, force single column for multi-column grids */
+/* On mobile, force single column for fixed grids */
 @media (max-width: 40rem) {
   .bob_grid__2,
   .bob_grid__3 {
     grid-template-columns: 1fr;
   }
+}
+
+
+/* ─────────────────────────────────────────
+   AUTO-FIT vs AUTO-FILL — key difference:
+
+   Both fill a row with as many columns as possible
+   given a minimum column width. The difference appears
+   when there are FEWER items than columns can fit:
+
+   AUTO-FIT (.bob_grid__auto):
+     Empty tracks are COLLAPSED to zero width.
+     The existing items EXPAND and stretch to fill
+     the entire row width.
+     → Use when: you want cards/items to always
+       fill the available space. Ideal for feature
+       grids, icon grids, card listings where you
+       want them to look intentionally full.
+
+   AUTO-FILL (.bob_grid__fill):
+     Empty tracks are KEPT at their minimum width.
+     Items stay at their natural size and do NOT stretch.
+     The remaining space stays empty on the right.
+     → Use when: you want items to have a consistent
+       fixed width regardless of how many there are.
+       Ideal for media galleries, avatars, product
+       thumbnails where stretching would look wrong.
+
+   Visual example with 2 items in a row that fits 3:
+
+   auto-fit:  [  item1  ][  item2  ]          (2 items fill full row)
+   auto-fill: [  item1  ][  item2  ][  empty  ] (empty track preserved)
+   ───────────────────────────────────────── */
+
+/* auto-fit: items expand to fill the row */
+.bob_grid__auto {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+
+/* auto-fill: items keep fixed width, empty space stays empty */
+.bob_grid__fill {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
 }
