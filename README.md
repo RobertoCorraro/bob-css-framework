@@ -166,29 +166,32 @@ Any section becomes dark without modifying its children:
 
 ---
 
-## Anchor Sections (nav ↔ content)
+## Semantic Sections
 
-One `<section class="bob_section">` per content block, with an `id` matching the nav/submenu
-entry that links to it:
+One `<section class="bob_section">` per content block — this is the default way to structure any
+bob page, nav or no nav. It gives every block a landmark for screen readers, a stable id for
+SEO/deep-linking, and a clean hook for JS/data attributes instead of div-soup:
 
 ```html
-<nav class="bob_nav__links">
-  <li><a href="#servizi">Servizi</a></li>
-  <li><a href="#portfolio">Portfolio</a></li>
-</nav>
-
 <section id="servizi" class="bob_section">...</section>
 <section id="portfolio" class="bob_section">...</section>
 ```
 
+Give each section its own `id` as a matter of course, independent of whether anything currently
+links to it — it costs nothing and keeps the option open. When a nav *does* link to it (the main
+nav, or an internal tab/segmented menu — see `BOB_UI_collections` BLOCK-025 "Tabs con icone"), the
+id becomes that link's target:
+
+```html
+<nav class="bob_nav__links">
+  <li><a href="#servizi">Servizi</a></li>
+</nav>
+```
+
 `bob_section` already carries `scroll-margin-top: var(--bob_nav_height)`, so clicking the link
 (or calling `element.scrollIntoView()` from JS) lands with the section heading visible below the
-sticky nav — never hidden underneath it. No manual scroll-offset math in JS.
-
-The same `id` works as the target for an internal tab/segmented menu inside a page (see
-`BOB_UI_collections` BLOCK-025 "Tabs con icone"): on a single-page site the tab can just be an
-`<a href="#section-id">` and reuse this same scroll-margin, no separate JS panel-switching logic
-needed.
+sticky nav — never hidden underneath it. No manual scroll-offset math in JS, and the property is
+inert when nothing links to the section.
 
 ---
 

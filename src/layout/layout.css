@@ -101,30 +101,33 @@
    that grows with viewport size (clamp).
    Lateral padding uses --bob_bleed.
 
-   ANCHOR CONVENTION — one <section> per content block,
-   `id` matches the clickable nav/submenu entry that points
-   to it:
-
-     <nav class="bob_nav__links">
-       <li><a href="#servizi">Servizi</a></li>
-       <li><a href="#portfolio">Portfolio</a></li>
-     </nav>
+   SEMANTIC STRUCTURE — one <section> per content block.
+   This is the default way to organize any bob page, whether
+   or not a nav links to it: it gives every block a landmark
+   for screen readers, a stable hook for SEO/deep-linking, and
+   a predictable place to attach block-specific state (data-*
+   attributes, JS hooks) without div-soup.
 
      <section id="servizi" class="bob_section">...</section>
      <section id="portfolio" class="bob_section">...</section>
+
+   Giving each section a stable `id` (its own slug, independent
+   of whether a menu happens to link to it) is cheap and keeps
+   the option open. WHEN a nav does link to it — either the main
+   nav or an internal tab/segmented menu (see BOB_UI_collections
+   BLOCK-025) — the id just becomes that link's target and this
+   scroll-margin-top (below) makes the jump land correctly:
+
+     <nav class="bob_nav__links">
+       <li><a href="#servizi">Servizi</a></li>
+     </nav>
 
    scroll-margin-top uses --bob_nav_height so the browser's
    native anchor scroll (or any JS smooth-scroll calling
    element.scrollIntoView()) stops with the heading visible
    below the sticky nav, instead of hidden underneath it —
-   no manual offset math needed in JS.
-
-   Same `id` doubles as the target for an internal tab/segmented
-   menu inside a section (see BOB_UI_collections BLOCK-025):
-   the tab's `aria-controls` can point at a child of this
-   section, or — for a single-page site — the tab can simply be
-   an <a href="#section-id"> and reuse this scroll-margin-top,
-   no separate JS panel-switching needed.
+   no manual offset math needed in JS. Harmless when nothing
+   links to the section: the property only matters at scroll time.
    ───────────────────────────────────────── */
 
 .bob_section {
