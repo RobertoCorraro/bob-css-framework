@@ -5,7 +5,8 @@
    - bob_container        centered content wrapper with max-width
    - bob_page             full-page grid: 3-column pattern (gutters + content)
    - bob_hero             full dynamic viewport height section
-   - bob_section          default section with vertical + lateral padding
+   - bob_section          default section with vertical + lateral padding,
+                           scroll-margin-top for anchor nav (id = menu slug)
    - bob_section__full    full viewport width section
    - bob_section__dark    inverts all color tokens locally
    - bob_section__inset   floats a block over the body background
@@ -99,11 +100,37 @@
    Default section block with vertical padding
    that grows with viewport size (clamp).
    Lateral padding uses --bob_bleed.
+
+   ANCHOR CONVENTION — one <section> per content block,
+   `id` matches the clickable nav/submenu entry that points
+   to it:
+
+     <nav class="bob_nav__links">
+       <li><a href="#servizi">Servizi</a></li>
+       <li><a href="#portfolio">Portfolio</a></li>
+     </nav>
+
+     <section id="servizi" class="bob_section">...</section>
+     <section id="portfolio" class="bob_section">...</section>
+
+   scroll-margin-top uses --bob_nav_height so the browser's
+   native anchor scroll (or any JS smooth-scroll calling
+   element.scrollIntoView()) stops with the heading visible
+   below the sticky nav, instead of hidden underneath it —
+   no manual offset math needed in JS.
+
+   Same `id` doubles as the target for an internal tab/segmented
+   menu inside a section (see BOB_UI_collections BLOCK-025):
+   the tab's `aria-controls` can point at a child of this
+   section, or — for a single-page site — the tab can simply be
+   an <a href="#section-id"> and reuse this scroll-margin-top,
+   no separate JS panel-switching needed.
    ───────────────────────────────────────── */
 
 .bob_section {
   padding-block: clamp(3rem, 6vw, 6rem);
   padding-inline: var(--bob_bleed);
+  scroll-margin-top: var(--bob_nav_height);
 }
 
 

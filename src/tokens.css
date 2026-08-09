@@ -81,12 +81,21 @@
        100dvh — dynamic viewport height.
        Unlike vh, dvh updates when mobile browser UI hides on scroll,
        preventing the hero from overflowing or jumping.
+
+     --bob_nav_height:
+       Height of the sticky nav (see nav.css .bob_nav__inner).
+       Reused as scroll-margin-top on .bob_section so anchor
+       navigation (menu link → #section-id) never hides the
+       section heading behind the sticky bar. Single source of
+       truth: change this once, both the nav and every section's
+       scroll offset stay in sync.
      ───────────────────────────────────────── */
 
   --bob_bleed:      clamp(1rem, 5vw, 4rem);
   --bob_container:  min(100% - var(--bob_bleed) * 2, 80rem);
   --bob_touch_min:  2.75rem;
   --bob_hero_min:   100dvh;
+  --bob_nav_height: 3.5rem;
 
 
   /* ─────────────────────────────────────────

@@ -166,6 +166,32 @@ Any section becomes dark without modifying its children:
 
 ---
 
+## Anchor Sections (nav ↔ content)
+
+One `<section class="bob_section">` per content block, with an `id` matching the nav/submenu
+entry that links to it:
+
+```html
+<nav class="bob_nav__links">
+  <li><a href="#servizi">Servizi</a></li>
+  <li><a href="#portfolio">Portfolio</a></li>
+</nav>
+
+<section id="servizi" class="bob_section">...</section>
+<section id="portfolio" class="bob_section">...</section>
+```
+
+`bob_section` already carries `scroll-margin-top: var(--bob_nav_height)`, so clicking the link
+(or calling `element.scrollIntoView()` from JS) lands with the section heading visible below the
+sticky nav — never hidden underneath it. No manual scroll-offset math in JS.
+
+The same `id` works as the target for an internal tab/segmented menu inside a page (see
+`BOB_UI_collections` BLOCK-025 "Tabs con icone"): on a single-page site the tab can just be an
+`<a href="#section-id">` and reuse this same scroll-margin, no separate JS panel-switching logic
+needed.
+
+---
+
 ## Accessibility
 
 - 44px minimum touch target on all interactive elements.

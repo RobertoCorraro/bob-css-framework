@@ -61,7 +61,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--bob_space_4);
-  min-height: 3.5rem;
+  min-height: var(--bob_nav_height);
   padding-inline: var(--bob_bleed);
 }
 
