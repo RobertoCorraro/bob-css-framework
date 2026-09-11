@@ -1,0 +1,153 @@
+/* ============================================================
+   BOB CSS FRAMEWORK — Form Component
+
+   Structure (semantic + labels, always):
+   <form class="bob_form">
+     <div class="bob_field">
+       <label class="bob_label" for="email">Email</label>
+       <input class="bob_input" id="email" name="email" type="email" aria-describedby="email-hint">
+       <p class="bob_hint" id="email-hint">Visible hint</p>
+     </div>
+     <div class="bob_field">
+       <label class="bob_label" for="pw">Password</label>
+       <input class="bob_input" id="pw" name="pw" type="password" aria-invalid="true" aria-describedby="pw-err">
+       <p class="bob_error" id="pw-err">Visible error message</p>
+     </div>
+     <label class="bob_field bob_field__inline">
+       <input class="bob_check" type="checkbox"> I agree
+     </label>
+   </form>
+
+   NOTES
+   - Labels are ALWAYS associated (for/id) or wrapping (inline).
+   - Errors use visible text .bob_error + aria-invalid / aria-describedby.
+   - :user-invalid gives free validation styling without JS.
+   ============================================================ */
+
+
+/* ─── FORM ─── */
+
+.bob_form {
+  display: grid;
+  gap: var(--bob_space_4);
+}
+
+/* Two-column row on desktop, single column on mobile */
+.bob_form__row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--bob_space_4);
+}
+
+@media (min-width: 40rem) {
+  .bob_form__row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+
+/* ─── FIELD ─── */
+
+.bob_field {
+  display: grid;
+  gap: var(--bob_space_2);
+}
+
+.bob_field__inline {
+  display: flex;
+  align-items: center;
+  gap: var(--bob_space_2);
+}
+
+.bob_label {
+  font-weight: 600;
+}
+
+.bob_hint {
+  color: var(--bob_color_muted);
+  font-size: var(--bob_text_sm);
+}
+
+.bob_error {
+  color: var(--bob_color_danger);
+  font-size: var(--bob_text_sm);
+}
+
+
+/* ─── CONTROLS ─── */
+
+.bob_input,
+.bob_select,
+.bob_textarea {
+  width: 100%;
+  min-height: var(--bob_touch_min); /* 44px touch target */
+  padding: 0.7em 0.9em;             /* em scales with font-size */
+  color: var(--bob_color_text);
+  background: var(--bob_color_bg);
+  border: 1px solid var(--bob_color_border);
+  border-radius: var(--bob_radius_md);
+  transition: border-color var(--bob_duration_base) var(--bob_easing);
+}
+
+/* Focus: border-color change on :focus (visible for mouse clicks);
+   keyboard ring still provided by the global :focus-visible in reset. */
+.bob_input:focus,
+.bob_select:focus,
+.bob_textarea:focus {
+  border-color: var(--bob_color_accent);
+}
+
+.bob_input::placeholder {
+  color: var(--bob_color_muted);
+  opacity: 1;
+}
+
+.bob_textarea {
+  min-height: 8rem;
+  resize: vertical; /* user can grow it — usability */
+}
+
+.bob_input:disabled,
+.bob_select:disabled,
+.bob_textarea:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+/* Native checkbox/radio/range get the accent color */
+.bob_check,
+.bob_radio,
+.bob_range {
+  accent-color: var(--bob_color_accent);
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.bob_range {
+  width: 100%;
+}
+
+/* Boxed fieldset with legend sitting on the border */
+.bob_fieldset {
+  border: 1px solid var(--bob_color_border);
+  border-radius: var(--bob_radius_md);
+  padding: var(--bob_space_4);
+}
+
+.bob_fieldset legend {
+  padding-inline: var(--bob_space_2);
+  font-weight: 600;
+}
+
+
+/* ─── VALIDATION ─── */
+
+/* Error state: JS-free for native constraint validation */
+.bob_input:user-invalid,
+.bob_select:user-invalid,
+.bob_textarea:user-invalid,
+.bob_input[aria-invalid='true'],
+.bob_select[aria-invalid='true'],
+.bob_textarea[aria-invalid='true'] {
+  border-color: var(--bob_color_danger);
+}

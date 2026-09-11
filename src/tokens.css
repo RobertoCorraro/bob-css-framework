@@ -25,11 +25,12 @@
   --bob_primitive_dark:       #111827;
   --bob_primitive_dark_plus:  #060912;
   --bob_primitive_brand:      #111827;
+  --bob_primitive_danger:     #e5484d;
 
 
   /* ─────────────────────────────────────────
      SEMANTIC COLORS
-     Only 6 tokens. All components use these.
+     7 tokens. All components use these.
      Derived via color-mix() in oklab for perceptually
      accurate blending — no muddy or washed-out results.
      ───────────────────────────────────────── */
@@ -41,6 +42,7 @@
   --bob_color_accent:  var(--bob_primitive_brand);
   --bob_color_border:  color-mix(in oklab, var(--bob_primitive_dark) 10%, transparent);
   --bob_color_overlay: rgba(0, 0, 0, 0.5);
+  --bob_color_danger:  var(--bob_primitive_danger);
 
 
   /* ─────────────────────────────────────────
@@ -79,9 +81,10 @@
        44px — minimum touch target per Apple HIG and WCAG 2.5.5.
 
      --bob_hero_min:
-       100dvh — dynamic viewport height.
-       Unlike vh, dvh updates when mobile browser UI hides on scroll,
-       preventing the hero from overflowing or jumping.
+       100vh (fallback) → 100dvh where supported (see @supports below).
+       dvh = dynamic viewport height: updates when mobile browser UI
+       hides on scroll, preventing the hero from overflowing or jumping.
+       The @supports guard keeps a safe 100vh fallback on older browsers.
 
      --bob_nav_height:
        Height of the sticky nav (see nav.css .bob_nav__inner).
@@ -95,7 +98,7 @@
   --bob_bleed:      clamp(1rem, 5vw, 4rem);
   --bob_container:  min(100% - var(--bob_bleed) * 2, 80rem);
   --bob_touch_min:  2.75rem;
-  --bob_hero_min:   100dvh;
+  --bob_hero_min:   100vh;
   --bob_nav_height: 3.5rem;
 
 
@@ -205,6 +208,13 @@
   --bob_z_nav:   10;
   --bob_z_modal: 100;
   --bob_z_toast: 200;
+}
+
+/* dvh support guard: only override to dynamic viewport where supported */
+@supports (height: 100dvh) {
+  :root {
+    --bob_hero_min: 100dvh;
+  }
 }
 
 

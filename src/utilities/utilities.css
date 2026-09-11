@@ -27,8 +27,8 @@
 /* ─── TEXT ─── */
 
 .bob_text_center { text-align: center; }
-/* Testo muted: usa .bob_muted (base.css, color + font-size).
-   Non serve una utility color-only. */
+/* Muted text: use .bob_muted (base.css, color + font-size).
+   No color-only utility needed. */
 
 
 /* ─── ACCESSIBILITY ─── */
@@ -45,4 +45,37 @@
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* Skip link: keyboard-only jump to main content.
+   First element in <body>: <a class="bob_skip_link" href="#main">
+   transform-based (GPU compositor), never display:none — must stay focusable. */
+.bob_skip_link {
+  position: fixed;
+  top: var(--bob_space_2);
+  left: var(--bob_space_2);
+  z-index: var(--bob_z_toast);
+  padding: var(--bob_space_2) var(--bob_space_3);
+  background: var(--bob_color_bg);
+  color: var(--bob_color_text);
+  border-radius: var(--bob_radius_md);
+  box-shadow: var(--bob_shadow_md);
+  text-decoration: none;
+  font-weight: 600;
+  transform: translateY(calc(-100% - var(--bob_space_4))); /* off-screen */
+  transition: transform var(--bob_duration_fast) var(--bob_easing);
+}
+
+.bob_skip_link:focus-visible {
+  transform: translateY(0); /* slides into view */
+}
+
+
+/* ─── LAYOUT HELPERS ─── */
+
+/* Wraps a wide <table> so it scrolls horizontally on mobile instead
+   of breaking the layout: <div class="bob_table_wrap"><table>…</table></div> */
+.bob_table_wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }

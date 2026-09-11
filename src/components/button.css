@@ -79,6 +79,15 @@
   }
 }
 
+/* Disabled: last in file so it wins over hover/active;
+   neutralized elevation + not-allowed cursor. */
+.bob_button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 /* Small size: min touch target kept at 44px (--bob_touch_min),
    never below — accessibility rule of the framework.
    Only font-size scales; padding adjusts automatically via em. */

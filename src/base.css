@@ -31,6 +31,28 @@ p { max-width: 65ch; }
   max-width: 55ch;
 }
 
+/* .bob_link: text links inside content must look clickable.
+   Global `a` inherits color; this adds explicit affordance:
+   accent underline + color shift on hover. */
+.bob_link {
+  color: var(--bob_color_text);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-thickness: .08em;
+  text-underline-offset: .15em;
+  text-decoration-color: var(--bob_color_accent);
+  transition: color var(--bob_duration_fast) var(--bob_easing);
+}
+
+.bob_link:hover {
+  color: var(--bob_color_accent);
+}
+
+/* Long words/URLs must never overflow the viewport on mobile */
+p, li, td, th, h1, h2, h3, h4 {
+  overflow-wrap: break-word;
+}
+
 
 /* ─── SEMANTIC HTML ELEMENTS ───
    These elements get base styles without needing any class.
@@ -116,6 +138,38 @@ details > *:not(summary) {
   color: var(--bob_color_muted);
   font-size: var(--bob_text_sm);
   line-height: 1.6;
+}
+
+
+/* ─── TABLES ───
+   Base table styling for content tables: full-width, thin row
+   separators, strong header rule. Rows wrap gracefully on mobile. */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+caption {
+  text-align: left;
+  color: var(--bob_color_muted);
+  font-size: var(--bob_text_sm);
+  margin-bottom: var(--bob_space_2);
+}
+
+th, td {
+  padding: var(--bob_space_3);
+  border-bottom: 1px solid var(--bob_color_border);
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  font-weight: 600;
+}
+
+thead th {
+  border-bottom-color: var(--bob_color_text);
 }
 
 
