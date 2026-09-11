@@ -266,6 +266,15 @@ Always use the three-level scale:
 
 ---
 
+## Code Comments
+
+- Use section banner comments to split logical areas of a file:
+  `/* ===== HEADER ===== */`, `/* ─── HERO ─── */`, `// --- Form validation ---`.
+- Comment only what is critical or non-obvious — explain the **why**, never the **what**.
+- Never narrate obvious code (`/* sets the color to red */`) — that is noise.
+
+---
+
 ## File Import Order
 
 The order of imports in `bob.css` is critical. Never change it.
@@ -300,6 +309,7 @@ They exist so each file can be read/edited standalone in dev.
 - Never write `max-width` media queries (except for the existing mobile-only overrides).
 - Never animate `left`, `top`, `width`, `height` — always use `transform`.
 - Never use `!important` except in utility overrides.
+- Never add narrating comments that restate the obvious — explain the *why*, not the *what*.
 - Never apply a BOB class to a `<div>` when a semantic element exists.
 - Never add spacing variables outside the 4pt scale.
 - Never break the import order in `bob.css`.
