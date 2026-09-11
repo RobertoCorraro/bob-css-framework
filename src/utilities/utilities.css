@@ -26,8 +26,9 @@
 
 /* ─── TEXT ─── */
 
-.bob_text_center  { text-align: center; }
-.bob_text_muted   { color: var(--bob_color_muted); }
+.bob_text_center { text-align: center; }
+/* Testo muted: usa .bob_muted (base.css, color + font-size).
+   Non serve una utility color-only. */
 
 
 /* ─── ACCESSIBILITY ─── */

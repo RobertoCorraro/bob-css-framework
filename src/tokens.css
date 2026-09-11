@@ -40,6 +40,7 @@
   --bob_color_muted:   color-mix(in oklab, var(--bob_primitive_dark) 45%, var(--bob_primitive_light));
   --bob_color_accent:  var(--bob_primitive_brand);
   --bob_color_border:  color-mix(in oklab, var(--bob_primitive_dark) 10%, transparent);
+  --bob_color_overlay: rgba(0, 0, 0, 0.5);
 
 
   /* ─────────────────────────────────────────

@@ -279,6 +279,17 @@ components/   → components before utilities
 utilities.css → utilities last so they can override components
 ```
 
+### `@import` — source-level only
+
+The `@import url(...)` statements in `bob.css` are a **source-level convenience only**.
+They exist so each file can be read/edited standalone in dev.
+
+- **Never** serve `bob.css` as-is in production via `<link rel="stylesheet">`.
+  Raw `@import` blocks rendering and degrades LCP — a known anti-pattern.
+- **Usable only** when built with Vite/PostCSS: the bundle inlines all imports
+  into one minified CSS file. If a project does not use a bundler, pre-inline
+  manually (concatenate in this same order) and ship the single result.
+
 ---
 
 ## What AI Agents Should Never Do
